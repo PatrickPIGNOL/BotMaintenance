@@ -1,0 +1,57 @@
+/*
+    Object Based Discord Bot, a simple Object Based Discord Bot squeleton.
+    Copyright ©️ 2020 Patrick PIGNOL <mailto:patrick.pignol@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+const OnEvent = require("../OnEvent.js");
+class OnGuildMemberRemove extends OnEvent {
+  constructor() {
+    super("guildMemberRemove");
+  }
+  
+  async mExecute(pDiscordBot, ...args) {
+    const member = args[0];
+    await this.mOnGuildMemberRemove(pDiscordBot, member);
+  }
+  
+  mOnGuildMemberRemove(pDiscordBot, member) {
+    const vUser = member.user;
+    const vGuild = member.guild;
+    const vCache = vGuild.channels.cache;
+    const vByeChannel = vCache.find(
+      vChannelFound => vChannelFound.name === pDiscordBot.Config.Parameters[member.guild.id]["ByeChannel"]
+    );
+    if (!vByeChannel) {
+      console.log(`channel "${pDiscordBot.Config.Parameters[member.guild.id]["ByeChannel"]}" not found`);
+      return;
+    }
+    let vMessage = pDiscordBot.Config.Parameters[member.guild.id]["ByeMessage"];    
+    while(vMessage.indexOf("${member}") > -1)
+    {
+      vMessage = vMessage.replace('${member}', `${member}`);
+    }
+    const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+      .setAuthor(
+        vGuild.owner.user.username,
+        vGuild.owner.user.displayAvatarURL()
+      )
+      .setColor(pDiscordBot.aConfig.Bad)
+      .setDescription(vMessage)
+      .setThumbnail(vUser.displayAvatarURL());
+    vByeChannel.send(vEmbed);
+  }
+}
+
+module.exports = new OnGuildMemberRemove();
