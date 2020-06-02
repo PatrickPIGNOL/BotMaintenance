@@ -1,0 +1,8 @@
+{	
+	"Prefix": "+",
+  "Good": "#00FF00",
+  "Warn": "#FFFF00",
+  "Bad": "#FF0000",
+  "Log": "#0000FF",
+  "URL": "https://l-pbot.glitch.me/"
+}
