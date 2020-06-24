@@ -44,23 +44,28 @@ class OnReady extends OnEvent {
       `${vMembersCount} members, in ${vChannelsCount} channels of ${vGuildsCount} guilds.`
     );
     pDiscordBot.SQL.prepare(
-        "DROP TABLE IF EXISTS Warns;"
-      )
-      .run();
+      "CREATE TABLE IF NOT EXISTS Warns (GuildID TEXT, GuildName TEXT, MemberID TEXT, MemberTag TEXT, ModeratorID TEXT, ModeratorTag TEXT, Date TEXT, Reason TEXT);"
+    ).run();
     pDiscordBot.SQL.prepare(
-        "CREATE TABLE IF NOT EXISTS Warns (GuildID TEXT, GuildName TEXT, MemberID TEXT, MemberTag TEXT, ModeratorID TEXT, ModeratorTag TEXT, Date TEXT, Reason TEXT);"
-      )
-      .run();
-    pDiscordBot.SQL.prepare(
-        "CREATE TABLE IF NOT EXISTS Raids (GuildID TEXT, GuildName TEXT, MemberID TEXT, MemberTag TEXT, Message TEXT, Number INTEGER, Date DOUBLE, PRIMARY KEY (GuildID, MemberID, Message));"
-      )
-      .run();
+      "CREATE TABLE IF NOT EXISTS Raids (GuildID TEXT, GuildName TEXT, MemberID TEXT, MemberTag TEXT, Message TEXT, Number INTEGER, Date DOUBLE, PRIMARY KEY (GuildID, MemberID, Message));"
+    ).run();
     pDiscordBot.SQL.prepare(
       "CREATE TABLE IF NOT EXISTS Parameters (GuildID TEXT, GuildName TEXT, ParameterName TEXT, ParameterValue TEXT, PRIMARY KEY(GuildID, ParameterName));"
     ).run();
-
+    pDiscordBot.SQL.prepare(
+      "CREATE TABLE IF NOT EXISTS Autoroles (GuildID TEXT, GuildName TEXT, Type TEXT, RoleID TEXT, RoleName TEXT, PRIMARY KEY (GuildID, Type, RoleID));"
+    ).run();
+    pDiscordBot.SQL.getAutoroles = pDiscordBot.SQL.prepare(
+      "SELECT * FROM autoroles WHERE GuildID = ? AND Type = ?"
+    );
+    pDiscordBot.SQL.setAutoroles = pDiscordBot.SQL.prepare(
+      "INSERT OR REPLACE INTO autoroles (GuildID, GuildName, Type, RoleID, RoleName) VALUES (@GuildID, @GuildName, @Type, @RoleID, @RoleName)"
+    );
+    pDiscordBot.SQL.delAutoroles = pDiscordBot.SQL.prepare(
+      "DELETE FROM autoroles WHERE GuildID = @GuildID AND Type = @Type AND RoleID = @RoleID"
+    );
     pDiscordBot.SQL.getWarns = pDiscordBot.SQL.prepare(
-      "SELECT rowid, * FROM Warns WHERE GuildID = ? ORDER BY Date DESC"
+      "SELECT rowid, * FROM Warns WHERE GuildID = ? ORDER BY MemberTag ASC, Date DESC"
     );
     pDiscordBot.SQL.setWarns = pDiscordBot.SQL.prepare(
       "INSERT OR REPLACE INTO Warns (GuildID, GuildName, MemberID, MemberTag, ModeratorID, ModeratorTag, Date, Reason) VALUES (@GuildID, @GuildName, @MemberID, @MemberTag, @ModeratorID, @ModeratorTag, @Date, @Reason)"
@@ -85,10 +90,12 @@ class OnReady extends OnEvent {
       pDiscordBot.Config.Parameters[vGuildFound.id] = new Array();
       const vParameters = pDiscordBot.SQL.getParameters.all(vGuildFound.id);
       vParameters.forEach(vParameter => {
-        pDiscordBot.Config.Parameters[vGuildFound.id][vParameter.ParameterName] = vParameter.ParameterValue;  
+        pDiscordBot.Config.Parameters[vGuildFound.id][
+          vParameter.ParameterName
+        ] = vParameter.ParameterValue;
       });
     });
   }
 }
 
-module.exports = new OnReady(); 
+module.exports = new OnReady();

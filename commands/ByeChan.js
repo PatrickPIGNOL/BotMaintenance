@@ -26,7 +26,7 @@ class ByeChan extends Command {
       ],
       1,
       0,
-      "byechan <ChannelID>",
+      "byechan <#ChannelID>",
       "Change channel d'annonce des départs.",
       true,
       0

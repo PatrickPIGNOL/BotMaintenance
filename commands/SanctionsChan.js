@@ -33,25 +33,33 @@ class SanctionsChan extends Command {
     );
   }
   async mExecute(pDiscordBot, message, args) {
-    super.mExecute(pDiscordBot, message, args);
-    pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"] = args[0];
-    let vParameter = {
-      GuildID:`${message.guild.id}`, 
-      GuildName:`${message.guild.name}`, 
-      ParameterName:"SanctionsChannel", 
-      ParameterValue: pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]
-    };
-    pDiscordBot.SQL.setParameters.run(vParameter);
-    const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
-      .setAuthor(
-        pDiscordBot.aClient.user.username,
-        pDiscordBot.aClient.user.displayAvatarURL(),
-        pDiscordBot.aConfig.URL
-      )
-      .setColor(pDiscordBot.aConfig.Good)
-      .setDescription(`Le cannal des sanctions à bien été changé en "${pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]}"`)
-      .setThumbnail(message.author.displayAvatarURL());
-    message.channel.send(vEmbed);
+    try
+    {
+      super.mExecute(pDiscordBot, message, args);
+      pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"] = message.mentions.channels.first().name;
+      let vParameter = { 
+        GuildID:`${message.guild.id}`, 
+        GuildName:`${message.guild.name}`, 
+        ParameterName:"SanctionsChannel", 
+        ParameterValue: pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]
+      };
+      pDiscordBot.SQL.setParameters.run(vParameter);
+      const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+        .setAuthor(
+          pDiscordBot.aClient.user.username,
+          pDiscordBot.aClient.user.displayAvatarURL(),
+          pDiscordBot.aConfig.URL
+        )
+        .setColor(pDiscordBot.aConfig.Good)
+        .setDescription(`Le cannal des sanctions à bien été changé en "${pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]}"`)
+        .setThumbnail(message.author.displayAvatarURL());
+      message.channel.send(vEmbed);
+    }
+    catch(e)
+    {
+      console.log(e);
+      message.channel.send(e);
+    }
     message.delete();
   }
 }

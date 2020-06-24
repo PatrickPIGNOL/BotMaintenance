@@ -16,18 +16,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const Command = require("../Command.js");
-class Warn extends Command {
+class Unwarn extends Command {
   constructor() {
     super(
-      "warn",
+      "unwarn",
       [],
       [
         "ADMINISTRATOR"
       ],
-      2,
       1,
-      "warn <@IDUtilisateur> <Raison>",
-      "Warn l'utilisateur <@IDUtilisateur> pour la raison <Raison>.",
+      0,
+      "unwarn <IDWarn>",
+      "Unwarn détruit le warn grâce à son <IDWarn> founis par la commande \"listwarns\".",
       true,
       0
     );
@@ -39,33 +39,23 @@ class Warn extends Command {
       message.delete();
       return; 
     });
-    const vMember = message.mentions.members.first();
-    const vAuthor = message.author;    
-    args.shift();
-    const vReason = args.join(" ");
-    console.log(Date.now().toString());
-    const vWarns = {      
-      GuildID:`${message.guild.id}`, 
-      GuildName:`${message.guild.name}`, 
-      MemberID: `${vMember.user.id}`,
-      MemberTag:`${vMember.user.tag}`,
-      ModeratorID: vAuthor.id,
-      ModeratorTag: vAuthor.tag,
-      Date:Date.now(),
-      Reason: vReason
-    };
-    pDiscordBot.SQL.setWarns.run(vWarns);
+    if(isNaN(args[0]))
+    {
+      message.reply(`${args[0]} n'est pas un identifiant valide.`);
+      message.delete();
+      return;
+    }
+    pDiscordBot.SQL.delWarns.run(args[0]);
     const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
       .setAuthor(
         pDiscordBot.aClient.user.username,
         pDiscordBot.aClient.user.displayAvatarURL(),
         pDiscordBot.aConfig.URL
       )
-      .setTitle("!WARN!")
-      .setColor(pDiscordBot.aConfig.Warn)
-      .setDescription(`L'utilisateur ${vMember} à été Warn par le modérateur ${vAuthor} pour la raison : "${vReason}"`)
+      .setTitle("Unwarn")
+      .setColor(pDiscordBot.aConfig.Good)
+      .setDescription(`Le warn avec l'id "${args[0]}" à bien été supprimé si il existait.`)
       .setThumbnail(message.author.displayAvatarURL());
-    message.channel.send(vEmbed);
     const vSanctionsChannel = message.guild.channels.cache.find(vChannelFound => vChannelFound.name === pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]);
     if(vSanctionsChannel)
     {
@@ -75,4 +65,4 @@ class Warn extends Command {
   }
 }
 
-module.exports = new Warn();
+module.exports = new Unwarn();

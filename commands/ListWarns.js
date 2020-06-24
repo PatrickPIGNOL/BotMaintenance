@@ -14,58 +14,53 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    
 */
 const Command = require("../Command.js");
-class Warn extends Command {
+class ListeWarns extends Command {
   constructor() {
     super(
-      "warn",
-      [],
+      "listewarns",
+      ["listwarn","listwarns"],
       [
         "ADMINISTRATOR"
       ],
-      2,
-      1,
-      "warn <@IDUtilisateur> <Raison>",
-      "Warn l'utilisateur <@IDUtilisateur> pour la raison <Raison>.",
+      0,
+      0,
+      "listwarns",
+      "Liste tous les warns du serveur.",
       true,
       0
     );
   }
-  async mExecute(pDiscordBot, message, args) {
+  async mExecute(pDiscordBot, message, args) { 
     super.mExecute(pDiscordBot, message, args).catch(e => {
       console.log(e);
-      message.reply(e);
+      message.channel.send(e);
       message.delete();
-      return; 
+      return;
     });
-    const vMember = message.mentions.members.first();
-    const vAuthor = message.author;    
-    args.shift();
-    const vReason = args.join(" ");
-    console.log(Date.now().toString());
-    const vWarns = {      
-      GuildID:`${message.guild.id}`, 
-      GuildName:`${message.guild.name}`, 
-      MemberID: `${vMember.user.id}`,
-      MemberTag:`${vMember.user.tag}`,
-      ModeratorID: vAuthor.id,
-      ModeratorTag: vAuthor.tag,
-      Date:Date.now(),
-      Reason: vReason
-    };
-    pDiscordBot.SQL.setWarns.run(vWarns);
+    const vWarns = pDiscordBot.SQL.getWarns.all(message.guild.id);
+    let vMessage = "";
+    if(vWarns.length === 0)
+    {
+      vMessage = "*La liste des Warns est vide ...*";
+    }
+    vWarns.forEach(vWarn=> { 
+      let vDate = new Date();
+      vDate.setTime(vWarn.Date);
+      vMessage += `----------------\n**ID : ${vWarn.rowid}**, date : ${vDate.toISOString()}\nModérateur : ${pDiscordBot.Client.users.resolve(vWarn.ModeratorID)}\nUtilisateur : ${pDiscordBot.Client.users.resolve(vWarn.MemberID)}\n Raison : "${vWarn.Reason}"\n`;
+    });
     const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
       .setAuthor(
         pDiscordBot.aClient.user.username,
         pDiscordBot.aClient.user.displayAvatarURL(),
         pDiscordBot.aConfig.URL
-      )
-      .setTitle("!WARN!")
-      .setColor(pDiscordBot.aConfig.Warn)
-      .setDescription(`L'utilisateur ${vMember} à été Warn par le modérateur ${vAuthor} pour la raison : "${vReason}"`)
+      ) 
+      .setTitle("Liste des WARNs")
+      .setColor(pDiscordBot.aConfig.Good)
+      .setDescription(vMessage)
       .setThumbnail(message.author.displayAvatarURL());
-    message.channel.send(vEmbed);
     const vSanctionsChannel = message.guild.channels.cache.find(vChannelFound => vChannelFound.name === pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]);
     if(vSanctionsChannel)
     {
@@ -75,4 +70,4 @@ class Warn extends Command {
   }
 }
 
-module.exports = new Warn();
+module.exports = new ListeWarns();

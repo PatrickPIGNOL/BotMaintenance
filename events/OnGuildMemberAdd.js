@@ -27,6 +27,37 @@ class OnGuildMemberAdd extends OnEvent {
   }
 
   async mOnGuildMemberAdd(pDiscordBot, member) {
+    if (member.user.bot) {
+      const vBotAutoroles = pDiscordBot
+        .mSQL()
+        .getAutoroles.all(member.guild.id, "bot");
+      if (vBotAutoroles) {
+        vBotAutoroles.forEach(vBotAutorole => {
+          const vBotRole = member.guild.roles.cache.find(
+            vRoleFound => vRoleFound.id === vBotAutorole.RoleID
+          );
+          if(vBotRole)
+          {
+            member.roles.add(vBotRole, "autorole onGuildMemberAdd");
+          }
+        });
+      }
+    } else {
+      const vUserAutoroles = pDiscordBot
+        .mSQL()
+        .getAutoroles.all(member.guild.id, "bot");
+      if (vUserAutoroles) {
+        vUserAutoroles.forEach(vUserAutorole => {
+          const vUserRole = member.guild.roles.cache.find(
+            vRoleFound => vRoleFound.id === vUserAutorole.RoleID
+          );
+          if(vUserRole)
+          {
+            member.roles.add(vUserRole, "autorole onGuildMemberAdd");
+          }
+        });
+      }
+    }
     console.log(`a new member entered the guild : ${member.tag}`);
   }
 }

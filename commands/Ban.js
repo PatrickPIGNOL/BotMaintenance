@@ -33,51 +33,66 @@ class Ban extends Command {
     );
   }
   async mExecute(pDiscordBot, message, args) {
-    super.mExecute(pDiscordBot, message, args);
-    const vUserID = args.shift();
-    const vReason = args.join(" ");
-    let vUser;
-    message.guild.members.ban(vUserID, { days: 0, reason: vReason})
-      .then(vUserFound => {
-        vUser = vUserFound;
-      })
-      .catch((error) => {
-        const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
-          .setAuthor(
-            pDiscordBot.aClient.user.username,
-            pDiscordBot.aClient.user.displayAvatarURL(),
-            pDiscordBot.aConfig.URL
-          )
-          .setTitle("ERREUR ...")
-          .setColor(pDiscordBot.aConfig.Bad)
-          .setDescription(`L'utilisateur avec l'ID : "${vUserID}" n'existe pas ou vous n'avez pas les droits pour le bannir.`)
-          .setThumbnail(message.author.displayAvatarURL());
-        message.channel.send({
-          "content": `${message.guild.owner}`,
-          "embed": vEmbed
+    super.mExecute(pDiscordBot, message, args).then(()=>{
+      const vUserID = args.shift();
+      const vReason = args.join(" ");
+      let vUser;
+      message.guild.members.ban(vUserID, { days: 0, reason: vReason})
+        .then(vUserFound => {
+          vUser = vUserFound;
+        })
+        .catch((error) => {
+          const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+            .setAuthor(
+              pDiscordBot.aClient.user.username,
+              pDiscordBot.aClient.user.displayAvatarURL(),
+              pDiscordBot.aConfig.URL
+            )
+            .setTitle("ERREUR ...")
+            .setColor(pDiscordBot.aConfig.Bad)
+            .setDescription(`L'utilisateur avec l'ID : "${vUserID}" n'existe pas ou vous n'avez pas les droits pour le bannir.`)
+            .setThumbnail(message.author.displayAvatarURL());
+          message.channel.send({
+            "content": `${message.guild.owner}`,
+            "embed": vEmbed
+          });
+          message.delete();
+          return;
         });
-        message.delete();
-        return;
+      if(!vUser)
+      {
+        vUser = pDiscordBot.Client.users.resolve(vUserID);
+      }
+      const vEmbed = new pDiscordBot.Discord.MessageEmbed()
+        .setAuthor(
+          pDiscordBot.aClient.user.username,
+          pDiscordBot.aClient.user.displayAvatarURL(),
+          pDiscordBot.aConfig.URL
+        )
+        .setTitle("BANNISSEMENT")
+        .setColor(pDiscordBot.aConfig.Good)
+        .setDescription(`L'utilisateur ${vUser||vUserID} à bien été bannis par ${message.author} pour la raison : "${vReason}"`)
+        .setThumbnail(message.author.displayAvatarURL());
+      message.channel.send({
+        "content": `${message.guild.owner}`,
+        "embed": vEmbed
       });
-    if(!vUser)
-    {
-      vUser = pDiscordBot.Client.users.resolveID(vUserID);
-    }
-    const vEmbed = new pDiscordBot.Discord.MessageEmbed()
-      .setAuthor(
-        pDiscordBot.aClient.user.username,
-        pDiscordBot.aClient.user.displayAvatarURL(),
-        pDiscordBot.aConfig.URL
-      )
-      .setTitle("BANNISSEMENT")
-      .setColor(pDiscordBot.aConfig.Good)
-      .setDescription(`L'utilisateur ${vUser || vUserID} à bien été bannis pour la raison : "${vReason}"`)
-      .setThumbnail(message.author.displayAvatarURL());
-    message.channel.send({
-      "content": `${message.guild.owner}`,
-      "embed": vEmbed
-    });
-    message.delete();
+      message.delete();
+    })
+    .catch(e => {
+      const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+        .setAuthor(
+          pDiscordBot.aClient.user.username,
+          pDiscordBot.aClient.user.displayAvatarURL(),
+          pDiscordBot.aConfig.URL
+        )
+        .setTitle("ERREUR ...")
+        .setColor(pDiscordBot.aConfig.Bad)
+        .setDescription(`${e}`)
+        .setThumbnail(message.author.displayAvatarURL());
+      message.reply(vEmbed);
+      message.delete();
+    })
   }
 }
 

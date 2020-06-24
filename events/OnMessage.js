@@ -106,9 +106,6 @@ class OnMessage extends OnEvent{
         vCommand.mExecute(pDiscordBot, message, vArgs);
       }
     }
-    
-
-    
   }
   
   mRaids(pDiscordBot, message) {
@@ -139,17 +136,22 @@ class OnMessage extends OnEvent{
       pDiscordBot.SQL.setRaids.run(vRaid); 
       if(vRaid.Number > 4)
       { 
+        let vMember;
+        if(message.member)
+        {
+          vMember = message.member;
+        }
+        else
+        {
+          vMember = message.guild.members.cache.find(vUserFound => vUserFound.id === message.author.id);
+        }
         if(message.author.id !== message.guild.owner.user.id)
         {
-          if(message.member)
+          if(!message.member.hasPermission("ADMINISTRATOR"))
           {
-            message.member.ban({days: 1, reason: "Auto-Ban : Spam-Raider détecté."});
-          }
-          else
-          {            
             const vMember = message.guild.members.cache.find(vUserFound => vUserFound.id === message.author.id);
             vMember.ban({days: 1, reason: "Auto-Ban : Spam-Raider détecté"});
-          }
+          }          
         }
       }
       const vRaids = pDiscordBot.SQL.prepare("SELECT rowid, * FROM Raids WHERE GuildID == ? ORDER BY Date DESC").all(message.guild.id);
