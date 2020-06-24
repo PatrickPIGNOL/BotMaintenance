@@ -126,31 +126,19 @@ class Command {
     return this.aCooldown();
   }
   async mExecute(pDiscordBot, message, args) {
-    if (!this.mHavePermission(pDiscordBot, message)) {
-      console.log("You don't have rights to execute this command.");        
-      message.reply("You don't have rights to execute this command.");
-      message.delete();
-      return;
+    if (this.aGuildOnly && message.channel.type !== "text") {
+      throw new Error("I cannot execute this command in DM channel !"); 
     }
-    if (this.aMentions > message.mentions.members.length) {      
-      console.log(`You must mention at least ${this.aMentions} member(s).`);
-      message.reply(`You must mention at least ${this.aMentions} member(s).`);
-      message.delete();
-      return;
+    if (!this.mHavePermission(pDiscordBot, message)) {
+      throw new Error("You don't have rights to execute this command."); 
     }
     if (this.aArgs > 0 && args.length < this.aArgs) {
-      console.log(`You must provide at least ${this.aArgs} parameters !`);
-      message.reply(`Vous devez fournir au moins ${this.aArgs} paramètres !`);
-      message.delete();
-      return;
+      throw new Error(`You must provide at least ${this.aArgs} parameters !`); 
     }
-    if (this.aGuildOnly && message.channel.type !== "text") {
-      console.log("I cannot execute this command in DM channel !");
-      message.reply("I cannot execute this command in DM channel !");
-      message.delete();
-      return;
+    if (this.aMentions > message.mentions.members.size) {      
+      throw new Error(`You must mention at least ${this.aMentions} member(s).`); 
     }
   }
 }
 
-module.exports = Command;
+module.exports = Command; 

@@ -60,7 +60,12 @@ function mHTMLFooter()
 app.get("/", (request, response) => 
 {
   let vHTML = mHTMLHeader();
-  vHTML += `</H1><img src='${DiscordBot.Client.user.displayAvatarURL()}' width='50'>${DiscordBot.Client.user.username} on line ...</H1>`;   
+  vHTML += `</H1><img src='${DiscordBot.Client.user.displayAvatarURL()}' width='50'>${DiscordBot.Client.user.username} on line ...</H1>`+   
+    `<script type="text/javascript">`+
+    `setTimeout(()=>{`+
+    `location = '${DiscordBot.Config.URL}'`+
+    `}, 10000)`+
+    `</script>`;
   vHTML += mHTMLFooter();
   response.send(vHTML);
 });
