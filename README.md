@@ -36,10 +36,4 @@ Discord Events are in ./event dirrectory. you can edit them as your need ... nor
 
 [/](https://malleable-traveling-moonstone.glitch.me/) An activity page to know if the bot is available. This page is designed to be ping by [uptimerobot.com](http://uptimerobot.com).
 
-## Made by [Glitch](https://glitch.com/)
-
-**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
-
-Find out more [about Glitch](https://glitch.com/about).
-
-( ᵔ ᴥ ᵔ )
+[![Run on Repl.it](https://repl.it/badge/github/PatrickPIGNOL/BotMaintenance)](https://repl.it/github/PatrickPIGNOL/BotMaintenance)
