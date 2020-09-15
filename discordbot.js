@@ -53,9 +53,9 @@ class DiscordBot
 		this.aSQL = new this.aSQLite("./discordbot.sqlite");
 		this.aSQL.Database = new Database(this.aSQL);
 	} 
-	mLogin() 
+	async mLogin() 
 	{
-		this.aClient.login(process.env.TOKEN);
+		await this.aClient.login(process.env.TOKEN);
 		this.aClient.clearImmediate();
 		this.aClient.removeAllListeners();
 
@@ -65,12 +65,14 @@ class DiscordBot
 		for (const vFile of vEventsFiles) 
 		{
 			const vEvent = require(`./events/${vFile}`);
-			console.log(`${vFile} (${vEvent.EventName} event) loading...`);
+			//console.log(`${vFile} (${vEvent.EventName} event) loading...`);
 			this.aClient.on(vEvent.EventName, (...args) => 
 			{
+				//console.log(`${vEvent.EventName} event running...`);
 				vEvent.mExecute(this, ...args);
+				//console.log(`${vEvent.EventName} event runned !`);
 			});
-			console.log(`loaded !`);
+			//console.log(`loaded !`);
 		}
 	}
 	get Discord() 
