@@ -16,50 +16,57 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const OnEvent = require("../OnEvent.js");
-class OnGuildMemberAdd extends OnEvent {
-  constructor() {
-    super("guildMemberAdd");
-  }
+class OnGuildMemberAdd extends OnEvent 
+{
+	constructor() 
+	{
+		super("guildMemberAdd");
+	}
 
-  async mExecute(pDiscordBot, ...args) {
-    const member = args[0];
-    await this.mOnGuildMemberAdd(pDiscordBot, member);
-  }
+	async mExecute(pDiscordBot, ...args) 
+	{
+		const member = args[0];
+		await this.mOnGuildMemberAdd(pDiscordBot, member);
+	}
 
-  async mOnGuildMemberAdd(pDiscordBot, member) {
-    if (member.user.bot) {
-      const vBotAutoroles = pDiscordBot
-        .mSQL()
-        .getAutoroles.all(member.guild.id, "bot");
-      if (vBotAutoroles) {
-        vBotAutoroles.forEach(vBotAutorole => {
-          const vBotRole = member.guild.roles.cache.find(
-            vRoleFound => vRoleFound.id === vBotAutorole.RoleID
-          );
-          if(vBotRole)
-          {
-            member.roles.add(vBotRole, "autorole onGuildMemberAdd");
-          }
-        });
-      }
-    } else {
-      const vUserAutoroles = pDiscordBot
-        .mSQL()
-        .getAutoroles.all(member.guild.id, "bot");
-      if (vUserAutoroles) {
-        vUserAutoroles.forEach(vUserAutorole => {
-          const vUserRole = member.guild.roles.cache.find(
-            vRoleFound => vRoleFound.id === vUserAutorole.RoleID
-          );
-          if(vUserRole)
-          {
-            member.roles.add(vUserRole, "autorole onGuildMemberAdd");
-          }
-        });
-      }
-    }
-    console.log(`a new member entered the guild : ${member.tag}`);
-  }
+	async mOnGuildMemberAdd(pDiscordBot, member)
+	{
+		if (member.user.bot) 
+		{
+			const vBotAutoroles = pDiscordBot.SQL.Database.Autoroles.mAllAutoroles(member.guild.id, "bot");
+			if (vBotAutoroles) 
+			{
+				vBotAutoroles.forEach(vBotAutorole => 
+				{
+					const vBotRole = member.guild.roles.cache.find(
+						vRoleFound => vRoleFound.id === vBotAutorole.RoleID
+					);
+					if(vBotRole)
+					{
+						member.roles.add(vBotRole, "autorole onGuildMemberAdd");
+					}
+				});
+			}
+		} 
+		else
+		{
+			const vUserAutoroles = pDiscordBot.SQL.Database.Autoroles.mAllAutoroles(member.guild.id, "user");
+			if (vUserAutoroles) 
+			{
+				vUserAutoroles.forEach(vUserAutorole => 
+				{
+					const vUserRole = member.guild.roles.cache.find(
+						vRoleFound => vRoleFound.id === vUserAutorole.RoleID
+					);
+					if(vUserRole)
+					{
+						member.roles.add(vUserRole, "autorole onGuildMemberAdd");
+					}
+				});
+			}
+		}
+		console.log(`a new member entered the guild : ${member.tag}`);
+	}
 }
 
 module.exports = new OnGuildMemberAdd();

@@ -32,49 +32,63 @@ Config.json comments :
 */
 
 const fs = require("fs");
-class DiscordBot {
-  constructor() {
-    this.aDiscord = require("discord.js");
-    this.aClient = new this.aDiscord.Client();
-    this.aClient.commands = new this.aDiscord.Collection();
-    const vCommandFiles = fs
-      .readdirSync("./commands")
-      .filter(vFileFound => vFileFound.endsWith(".js"));
-    for (const vFile of vCommandFiles) {
-      const vCommand = require(`./commands/${vFile}`);
-      this.aClient.commands.set(vCommand.Name, vCommand);
-    }
-    this.aConfig = require("./config.json");
-    this.aSQLite = require("better-sqlite3");
-    this.aSQL = new this.aSQLite("./discordbot.sqlite");
-  } 
-  mLogin() {
-    this.aClient.login(process.env.TOKEN);
-    this.aClient.clearImmediate();
-    this.aClient.removeAllListeners();
+const Database = require("./tables/Database.js");
+class DiscordBot
+{
+	constructor() 
+	{
+		this.aDiscord = require("discord.js");
+		this.aClient = new this.aDiscord.Client();
+		this.aClient.commands = new this.aDiscord.Collection();
+		const vCommandFiles = fs
+		.readdirSync("./commands")
+		.filter(vFileFound => vFileFound.endsWith(".js"));
+		for (const vFile of vCommandFiles) 
+		{
+			const vCommand = require(`./commands/${vFile}`);
+			this.aClient.commands.set(vCommand.Name, vCommand);
+		}
+		this.aConfig = require("./config.json");
+		this.aSQLite = require("better-sqlite3");
+		this.aSQL = new this.aSQLite("./discordbot.sqlite");
+		this.aSQL.Database = new Database(this.aSQL);
+	} 
+	mLogin() 
+	{
+		this.aClient.login(process.env.TOKEN);
+		this.aClient.clearImmediate();
+		this.aClient.removeAllListeners();
 
-    const vEventsFiles = fs
-      .readdirSync("./events")
-      .filter(vFileFound => vFileFound.endsWith(".js"));
-    for (const vFile of vEventsFiles) {
-      const vEvent = require(`./events/${vFile}`);
-      this.aClient.on(vEvent.EventName, (...args) => {
-        vEvent.mExecute(this, ...args);
-      });
-    }
-  }
-  get Discord() {
-    return this.aDiscord;
-  }
-  get Client() {
-    return this.aClient;
-  }
-  get Config() {
-    return this.aConfig;
-  }
-  get SQL() {
-    return this.aSQL;
-  }
+		const vEventsFiles = fs
+		.readdirSync("./events")
+		.filter(vFileFound => vFileFound.endsWith(".js"));
+		for (const vFile of vEventsFiles) 
+		{
+			const vEvent = require(`./events/${vFile}`);
+			console.log(`${vFile} (${vEvent.EventName} event) loading...`);
+			this.aClient.on(vEvent.EventName, (...args) => 
+			{
+				vEvent.mExecute(this, ...args);
+			});
+			console.log(`loaded !`);
+		}
+	}
+	get Discord() 
+	{
+		return this.aDiscord;
+	}
+	get Client() 
+	{
+		return this.aClient;
+	}
+	get Config() 
+	{
+		return this.aConfig;
+	}
+	get SQL() 
+	{
+		return this.aSQL;
+	}
 }
 
 module.exports = new DiscordBot();

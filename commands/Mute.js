@@ -14,23 +14,45 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    
 */
-const OnEvent = require("../OnEvent.js");
-class OnChannelPinsUpdate extends OnEvent {
-	constructor() {
-		super("channelPinsUpdate");
+const Command = require("../Command.js");
+class Mute extends Command {
+	constructor() 
+	{
+		super(
+			"mute",
+			[],
+			[
+				"ADMINISTRATOR"
+			],
+			0,
+			1,
+			"mute @IDMembre",
+			"Mute le membre @IDMembre",
+			true,
+			0
+		);
 	}
-	
-	async mExecute(pDiscordBot, ...args) {
-		const channel = args[0];
-		const time = args[1];
-		await this.mOnReconnecting(pDiscordBot, channel, time);
-	}
-	
-	async mOnChannelPinsUpdate(pDiscordBot, channel, time) {
-		console.log(`channelPinsUpdate: ${channel}:${time}`);
+	async mExecute(pDiscordBot, message, args) 
+	{ 
+		super.mExecute(pDiscordBot, message, args).then(()=>
+		{
+			message.mentions.members.forEach(vMember => 
+			{
+				//vMember.roles.
+			});
+			message.reply("not implemented yet...");
+			message.delete();
+		})
+		.catch(e => 
+		{
+			console.log(e);
+			message.channel.send(e);
+			message.delete();
+			return;
+		});
 	}
 }
 
-module.exports = new OnChannelPinsUpdate();
-
+module.exports = new Mute();

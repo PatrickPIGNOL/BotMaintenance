@@ -16,44 +16,47 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const Command = require("../Command.js");
-class ByeMsg extends Command {
-  constructor() {
-    super(
-      "byemsg",
-      [],
-      [
-        "ADMINISTRATOR"
-      ],
-      1,
-      0,
-      "byemsg <Bye Message>",
-      "Change le message de départ du bot. Utilisez le tag \"${member}\" pour qu'il soit remplacé par l'identifiant du membre sortant.",
-      true,
-      0
-    );
-  }
-  async mExecute(pDiscordBot, message, args) {
-    super.mExecute(pDiscordBot, message, args);
-    pDiscordBot.Config.Parameters[message.guild.id]["ByeMessage"] = args.join(" ");
-    let vParameter = {
-      GuildID:`${message.guild.id}`, 
-      GuildName:`${message.guild.name}`, 
-      ParameterName:"ByeMessage", 
-      ParameterValue: pDiscordBot.Config.Parameters[message.guild.id]["ByeMessage"]
-    };
-    pDiscordBot.SQL.setParameters.run(vParameter);
-    const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
-      .setAuthor(
-        pDiscordBot.aClient.user.username,
-        pDiscordBot.aClient.user.displayAvatarURL(),
-        pDiscordBot.aConfig.URL
-      )
-      .setColor(pDiscordBot.aConfig.Good)
-      .setDescription(`Le message de départ du serveur à bien été changé en "${pDiscordBot.Config.Parameters[message.guild.id]["ByeMessage"]}"`)
-      .setThumbnail(message.author.displayAvatarURL());
-    message.channel.send(vEmbed);
-    message.delete();
-  }
+class ByeMsg extends Command 
+{
+	constructor() 
+	{
+		super(
+			"byemsg",
+			[],
+			[
+				"ADMINISTRATOR"
+			],
+			1,
+			0,
+			"byemsg <Bye Message>",
+			"Change le message de départ du bot. Utilisez le tag \"${member}\" pour qu'il soit remplacé par l'identifiant du membre sortant.",
+			true,
+			0
+		);
+	}
+	async mExecute(pDiscordBot, message, args) 
+	{
+		super.mExecute(pDiscordBot, message, args);
+		pDiscordBot.Config.Parameters[message.guild.id]["ByeMessage"] = args.join(" ");
+		let vParameter = {
+			GuildID:`${message.guild.id}`, 
+			GuildName:`${message.guild.name}`, 
+			ParameterName:"ByeMessage", 
+			ParameterValue: pDiscordBot.Config.Parameters[message.guild.id]["ByeMessage"]
+		};
+		pDiscordBot.SQL.Database.Parameters.mSetParameters(vParameter);
+		const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+			.setAuthor(
+				pDiscordBot.aClient.user.username,
+				pDiscordBot.aClient.user.displayAvatarURL(),
+				pDiscordBot.aConfig.URL
+			)
+			.setColor(pDiscordBot.aConfig.Good)
+			.setDescription(`Le message de départ du serveur à bien été changé en "${pDiscordBot.Config.Parameters[message.guild.id]["ByeMessage"]}"`)
+			.setThumbnail(message.author.displayAvatarURL());
+		message.channel.send(vEmbed);
+		message.delete();
+	}
 }
 
 module.exports = new ByeMsg();

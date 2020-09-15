@@ -48,97 +48,111 @@
 "MANAGE_WEBHOOKS",
 "MANAGE_EMOJIS"
 */
-class Command {
-  constructor(
-    pName,
-    pAliases,
-    pPermissions,
-    pArgs,
-    pMentions,
-    pUsage,
-    pDescription,
-    pGuildOnly,
-    pCooldown
-  ) {
-    this.aName = pName;
-    this.aAliases = pAliases;
-    this.aPermissions = pPermissions;
-    this.aArgs = pArgs;
-    this.aMentions = pMentions;
-    this.aUsage = pUsage;
-    this.aDescription = pDescription;
-    this.aGuildOnly = pGuildOnly;
-    this.aCooldown = pCooldown;
-  }
-  get Name() {
-    return this.aName;
-  }
-  get Aliases() {
-    return this.aAliases;
-  }
-  get Permissions() {
-    return this.aPermissions;
-  }
-  mHavePermission(pDiscordBot, pMessage) 
-  {
-    let vHavePermission = true;
-    if (this.aPermissions && this.aPermissions.length) 
-    {
-      vHavePermission = false;
-      const vMemberAuthor = pMessage.member;
-      if (vMemberAuthor) 
-      {
-        for(const vPermissionFound of this.aPermissions) 
-        {
-          if (vMemberAuthor.hasPermission(vPermissionFound)) 
-          {
-            vHavePermission = true;            
-            return vHavePermission;
-          }
-        }
-      }
-      else 
-      {
-        console.log("Error : no author for this message.");
-        vHavePermission = false;
-        return vHavePermission;
-      }
-    }
-    return vHavePermission;
-  }
-  get Args() 
-  {
-    return this.aArgs;
-  }
-  get Mentions() {
-    return this.aMentions;
-  }
-  get Usage() {
-    return this.aUsage;
-  }
-  get Description() {
-    return this.aDescription;
-  }
-  get GuildOnly() {
-    return this.aGuildOnly();
-  }
-  get Cooldown() {
-    return this.aCooldown();
-  }
-  async mExecute(pDiscordBot, message, args) {
-    if (this.aGuildOnly && message.channel.type !== "text") {
-      throw new Error("I cannot execute this command in DM channel !"); 
-    }
-    if (!this.mHavePermission(pDiscordBot, message)) {
-      throw new Error("You don't have rights to execute this command."); 
-    }
-    if (this.aArgs > 0 && args.length < this.aArgs) {
-      throw new Error(`You must provide at least ${this.aArgs} parameters !`); 
-    }
-    if (this.aMentions > message.mentions.members.size) {      
-      throw new Error(`You must mention at least ${this.aMentions} member(s).`); 
-    }
-  }
+class Command 
+{
+	constructor
+	(
+		pName,
+		pAliases,
+		pPermissions,
+		pArgs,
+		pMentions,
+		pUsage,
+		pDescription,
+		pGuildOnly,
+		pCooldown
+	) 
+	{
+		this.aName = pName;
+		this.aAliases = pAliases;
+		this.aPermissions = pPermissions;
+		this.aArgs = pArgs;
+		this.aMentions = pMentions;
+		this.aUsage = pUsage;
+		this.aDescription = pDescription;
+		this.aGuildOnly = pGuildOnly;
+		this.aCooldown = pCooldown;
+	}
+	get Name() 
+	{
+		return this.aName;
+	}
+	get Aliases() {
+		return this.aAliases;
+	}
+	get Permissions() {
+		return this.aPermissions;
+	}
+	mHavePermission(pDiscordBot, pMessage) 
+	{
+		let vHavePermission = true;
+		if (this.aPermissions && this.aPermissions.length) 
+		{
+			vHavePermission = false;
+			const vMemberAuthor = pMessage.member;
+			if (vMemberAuthor) 
+			{
+				for(const vPermissionFound of this.aPermissions) 
+				{
+					if (vMemberAuthor.hasPermission(vPermissionFound)) 
+					{
+						vHavePermission = true;            
+						return vHavePermission;
+					}
+				}
+			}
+			else 
+			{
+				console.log("Error : no author for this message.");
+				vHavePermission = false;
+				return vHavePermission;
+			}
+		}
+		return vHavePermission;
+	}
+	get Args() 
+	{
+		return this.aArgs;
+	}
+	get Mentions() 
+	{
+		return this.aMentions;
+	}
+	get Usage() 
+	{
+		return this.aUsage;
+	}
+	get Description() 
+	{
+		return this.aDescription;
+	}
+	get GuildOnly() 
+	{
+		return this.aGuildOnly();
+	}
+	get Cooldown() 
+	{
+		return this.aCooldown();
+	}
+	async mExecute(pDiscordBot, message, args) 
+	{
+		if (this.aGuildOnly && message.channel.type !== "text") 
+		{
+			throw new Error("I cannot execute this command in DM channel !"); 
+		}
+		if (!this.mHavePermission(pDiscordBot, message)) 
+		{
+			throw new Error("You don't have rights to execute this command."); 
+		}
+		if (this.aArgs > 0 && args.length < this.aArgs) 
+		{
+			throw new Error(`You must provide at least ${this.aArgs} parameters !`); 
+		}
+		if (this.aMentions > message.mentions.members.size) 
+		{
+			throw new Error(`You must mention at least ${this.aMentions} member(s).`); 
+		}
+	}
 }
 
 module.exports = Command; 

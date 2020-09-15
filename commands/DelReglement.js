@@ -16,41 +16,46 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const Command = require("../Command.js");
-class Ping extends Command 
+class DelReglement extends Command 
 {
 	constructor() 
 	{
 		super
 		(
-			"ping",
-			["pong"],
-			[],
+			"delreglement",
+			["delreglements"],
+			[
+				"ADMINISTRATOR"
+			],
+			1,
 			0,
-			0,
-			"ping",
-			"Bot's activity testing command. Answer : 'Pong!'.",
+			"delreglement <@IDAutoroleRèglement>",
+			"supprime les autoroles règlements par ID disponibles dans listreglements",
 			true,
 			0
 		);
   	}
+	
 	async mExecute(pDiscordBot, message, args) 
 	{
-		super.mExecute(pDiscordBot, message, args)
-		const vEmbed = new pDiscordBot
-			.aDiscord
-			.MessageEmbed()
-			.setAuthor
-			(
-				pDiscordBot.aClient.user.username,
-				pDiscordBot.aClient.user.displayAvatarURL(),
-				pDiscordBot.aConfig.URL
-			)
-			.setColor(pDiscordBot.aConfig.Good)
-			.setDescription(`Pong !`)
-			.setThumbnail(message.author.displayAvatarURL());
-		message.reply(vEmbed);
-		message.delete();
+		super.mExecute(pDiscordBot, message, args).then(() =>
+		{
+			const vIDReglement = args[0];
+			pDiscordBot.SQL.Database.Reglements.mDelReglements(vIDReglement);
+			const vEmbed = new pDiscordBot.Discord.MessageEmbed()
+				.setColor(pDiscordBot.Config.Good)
+				.setAuthor
+				(
+					pDiscordBot.Client.user.username,
+					pDiscordBot.Client.user.displayAvatarURL(),
+					pDiscordBot.Config.URL
+				)
+				.setTitle("Suppréssion de l'Autorole Règlement")
+				.setDescription(`L'Autorole avec l'id ${vIDReglement} à été supprimé si il existais.`);
+			message.channel.send(vEmbed);
+			message.delete();
+		}).catch(console.error);
 	}
 }
 
-module.exports = new Ping();
+module.exports = new DelReglement();

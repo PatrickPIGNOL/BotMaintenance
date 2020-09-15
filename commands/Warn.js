@@ -13,66 +13,70 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 const Command = require("../Command.js");
-class Warn extends Command {
-  constructor() {
-    super(
-      "warn",
-      [],
-      [
-        "ADMINISTRATOR"
-      ],
-      2,
-      1,
-      "warn <@IDUtilisateur> <Raison>",
-      "Warn l'utilisateur <@IDUtilisateur> pour la raison <Raison>.",
-      true,
-      0
-    );
-  }
-  async mExecute(pDiscordBot, message, args) {
-    super.mExecute(pDiscordBot, message, args).catch(e => {
-      console.log(e);
-      message.reply(e);
-      message.delete();
-      return; 
-    });
-    const vMember = message.mentions.members.first();
-    const vAuthor = message.author;    
-    args.shift();
-    const vReason = args.join(" ");
-    console.log(Date.now().toString());
-    const vWarns = {      
-      GuildID:`${message.guild.id}`, 
-      GuildName:`${message.guild.name}`, 
-      MemberID: `${vMember.user.id}`,
-      MemberTag:`${vMember.user.tag}`,
-      ModeratorID: vAuthor.id,
-      ModeratorTag: vAuthor.tag,
-      Date:Date.now(),
-      Reason: vReason
-    };
-    pDiscordBot.SQL.setWarns.run(vWarns);
-    const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
-      .setAuthor(
-        pDiscordBot.aClient.user.username,
-        pDiscordBot.aClient.user.displayAvatarURL(),
-        pDiscordBot.aConfig.URL
-      )
-      .setTitle("!WARN!")
-      .setColor(pDiscordBot.aConfig.Warn)
-      .setDescription(`L'utilisateur ${vMember} à été Warn par le modérateur ${vAuthor} pour la raison : "${vReason}"`)
-      .setThumbnail(message.author.displayAvatarURL());
-    message.channel.send(vEmbed);
-    const vSanctionsChannel = message.guild.channels.cache.find(vChannelFound => vChannelFound.name === pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]);
-    if(vSanctionsChannel)
-    {
-      vSanctionsChannel.send(vEmbed);
-    }
-    message.delete();
-  }
+class Warn extends Command 
+{
+	constructor() 
+	{
+		super(
+			"warn",
+			[],
+			[
+				"ADMINISTRATOR"
+			],
+			2,
+			1,
+			"warn <@IDUtilisateur> <Raison>",
+			"Warn l'utilisateur <@IDUtilisateur> pour la raison <Raison>.",
+			true,
+			0
+		);
+	}
+	async mExecute(pDiscordBot, message, args) 
+	{
+		super.mExecute(pDiscordBot, message, args).catch(e => 
+		{
+			console.log(e);
+			message.reply(e);
+			message.delete();
+			return; 
+		});
+		const vMember = message.mentions.members.first();
+		const vAuthor = message.author;    
+		args.shift();
+		const vReason = args.join(" ");
+		console.log(Date.now().toString());
+		const vWarns = {      
+			GuildID:`${message.guild.id}`, 
+			GuildName:`${message.guild.name}`, 
+			MemberID: `${vMember.user.id}`,
+			MemberTag:`${vMember.user.tag}`,
+			ModeratorID: vAuthor.id,
+			ModeratorTag: vAuthor.tag,
+			Date:Date.now(),
+			Reason: vReason
+		};
+		pDiscordBot.SQL.Database.Warns.mSetWarns(vWarns);
+		const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+			.setAuthor(
+				pDiscordBot.aClient.user.username,
+				pDiscordBot.aClient.user.displayAvatarURL(),
+				pDiscordBot.aConfig.URL
+			)
+			.setTitle("⚠️WARN⚠️")
+			.setColor(pDiscordBot.aConfig.Warn)
+			.setDescription(`L'utilisateur ${vMember} à été Warn par le modérateur ${vAuthor} pour la raison : "${vReason}"`)
+			.setThumbnail(message.author.displayAvatarURL());
+		message.channel.send(vEmbed);
+		const vSanctionsChannel = message.guild.channels.cache.find(vChannelFound => vChannelFound.name === pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]);
+		if(vSanctionsChannel)
+		{
+			vSanctionsChannel.send(vEmbed);
+		}
+		message.delete();
+	}
 }
 
 module.exports = new Warn();

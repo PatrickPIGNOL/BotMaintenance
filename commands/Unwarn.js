@@ -16,53 +16,59 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const Command = require("../Command.js");
-class Unwarn extends Command {
-  constructor() {
-    super(
-      "unwarn",
-      [],
-      [
-        "ADMINISTRATOR"
-      ],
-      1,
-      0,
-      "unwarn <IDWarn>",
-      "Unwarn détruit le warn grâce à son <IDWarn> founis par la commande \"listwarns\".",
-      true,
-      0
-    );
-  }
-  async mExecute(pDiscordBot, message, args) {
-    super.mExecute(pDiscordBot, message, args).catch(e => {
-      console.log(e);
-      message.reply(e);
-      message.delete();
-      return; 
-    });
-    if(isNaN(args[0]))
-    {
-      message.reply(`${args[0]} n'est pas un identifiant valide.`);
-      message.delete();
-      return;
-    }
-    pDiscordBot.SQL.delWarns.run(args[0]);
-    const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
-      .setAuthor(
-        pDiscordBot.aClient.user.username,
-        pDiscordBot.aClient.user.displayAvatarURL(),
-        pDiscordBot.aConfig.URL
-      )
-      .setTitle("Unwarn")
-      .setColor(pDiscordBot.aConfig.Good)
-      .setDescription(`Le warn avec l'id "${args[0]}" à bien été supprimé si il existait.`)
-      .setThumbnail(message.author.displayAvatarURL());
-    const vSanctionsChannel = message.guild.channels.cache.find(vChannelFound => vChannelFound.name === pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]);
-    if(vSanctionsChannel)
-    {
-      vSanctionsChannel.send(vEmbed);
-    }
-    message.delete();
-  }
+class Unwarn extends Command 
+{
+	constructor() 
+	{
+		super
+		(
+			"unwarn",
+			[],
+			[
+				"ADMINISTRATOR"
+			],
+			1,
+			0,
+			"unwarn <IDWarn>",
+			"Unwarn détruit le warn grâce à son <IDWarn> founis par la commande \"listwarns\".",
+			true,
+			0
+		);
+	}
+	async mExecute(pDiscordBot, message, args) 
+	{
+		super.mExecute(pDiscordBot, message, args).catch(e => 
+		{
+			console.log(e);
+			message.reply(e);
+			message.delete();
+			return; 
+		});		
+		if(isNaN(args[0]))
+		{
+			message.reply(`${args[0]} n'est pas un identifiant valide.`);
+			message.delete();
+			return;
+		}
+		const vParsed = parseInt(args[0]);
+		pDiscordBot.SQL.Database.Warns.mDelWarns(vParsed);
+		const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+			.setAuthor(
+				pDiscordBot.aClient.user.username,
+				pDiscordBot.aClient.user.displayAvatarURL(),
+				pDiscordBot.aConfig.URL
+			)
+			.setTitle("Unwarn")
+			.setColor(pDiscordBot.aConfig.Good)
+			.setDescription(`Le warn avec l'id "${args[0]}" à bien été supprimé si il existait.`)
+			.setThumbnail(message.author.displayAvatarURL());
+		const vSanctionsChannel = message.guild.channels.cache.find(vChannelFound => vChannelFound.name === pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]);
+		if(vSanctionsChannel)
+		{
+			vSanctionsChannel.send(vEmbed);
+		}
+		message.delete();
+	}
 }
 
 module.exports = new Unwarn();

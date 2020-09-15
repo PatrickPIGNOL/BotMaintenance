@@ -16,52 +16,55 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 const Command = require("../Command.js");
-class SanctionsChan extends Command {
-  constructor() {
-    super(
-      "sanctionschan",
-      [],
-      [
-        "ADMINISTRATOR"
-      ],
-      1,
-      0,
-      "sanctionschan <#IDChannel>",
-      "Change le cannal pour l'affichage des sanctions.",
-      true,
-      0
-    );
-  }
-  async mExecute(pDiscordBot, message, args) {
-    try
-    {
-      super.mExecute(pDiscordBot, message, args);
-      pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"] = message.mentions.channels.first().name;
-      let vParameter = { 
-        GuildID:`${message.guild.id}`, 
-        GuildName:`${message.guild.name}`, 
-        ParameterName:"SanctionsChannel", 
-        ParameterValue: pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]
-      };
-      pDiscordBot.SQL.setParameters.run(vParameter);
-      const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
-        .setAuthor(
-          pDiscordBot.aClient.user.username,
-          pDiscordBot.aClient.user.displayAvatarURL(),
-          pDiscordBot.aConfig.URL
-        )
-        .setColor(pDiscordBot.aConfig.Good)
-        .setDescription(`Le cannal des sanctions à bien été changé en "${pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]}"`)
-        .setThumbnail(message.author.displayAvatarURL());
-      message.channel.send(vEmbed);
-    }
-    catch(e)
-    {
-      console.log(e);
-      message.channel.send(e);
-    }
-    message.delete();
-  }
+class SanctionsChan extends Command 
+{
+	constructor() 
+	{
+		super(
+			"sanctionschan",
+			[],
+			[
+				"ADMINISTRATOR"
+			],
+			1,
+			0,
+			"sanctionschan <#IDChannel>",
+			"Change le cannal pour l'affichage des sanctions.",
+			true,
+			0
+		);
+	}
+	async mExecute(pDiscordBot, message, args) 
+	{
+		try
+		{
+			super.mExecute(pDiscordBot, message, args);
+			pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"] = message.mentions.channels.first().name;
+			let vParameter = { 
+				GuildID:`${message.guild.id}`, 
+				GuildName:`${message.guild.name}`, 
+				ParameterName:"SanctionsChannel", 
+				ParameterValue: pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]
+			};
+			pDiscordBot.SQL.Database.Parameters.mSetParameters(vParameter);
+			const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+				.setAuthor(
+				pDiscordBot.aClient.user.username,
+				pDiscordBot.aClient.user.displayAvatarURL(),
+				pDiscordBot.aConfig.URL
+				)
+				.setColor(pDiscordBot.aConfig.Good)
+				.setDescription(`Le cannal des sanctions à bien été changé en "${pDiscordBot.Config.Parameters[message.guild.id]["SanctionsChannel"]}"`)
+				.setThumbnail(message.author.displayAvatarURL());
+			message.channel.send(vEmbed);
+		}
+		catch(e)
+		{
+			console.log(e);
+			message.channel.send(e);
+		}
+		message.delete();
+	}
 }
 
 module.exports = new SanctionsChan();

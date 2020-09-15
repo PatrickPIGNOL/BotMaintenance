@@ -15,22 +15,38 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-const OnEvent = require("../OnEvent.js");
-class OnChannelPinsUpdate extends OnEvent {
-	constructor() {
-		super("channelPinsUpdate");
+const Table = require("./Table.js")
+class ParametersTable extends Table
+{
+	constructor(pSQL)
+	{
+		super(pSQL);
+		this.mCreate();
 	}
-	
-	async mExecute(pDiscordBot, ...args) {
-		const channel = args[0];
-		const time = args[1];
-		await this.mOnReconnecting(pDiscordBot, channel, time);
+	mCreate()
+	{
+		this.SQL.prepare(
+			"CREATE TABLE IF NOT EXISTS Parameters (GuildID TEXT, GuildName TEXT, ParameterName TEXT, ParameterValue TEXT, PRIMARY KEY(GuildID, ParameterName));"
+		).run();
 	}
-	
-	async mOnChannelPinsUpdate(pDiscordBot, channel, time) {
-		console.log(`channelPinsUpdate: ${channel}:${time}`);
+	mDrop()
+	{
+		this.SQL.prepare(
+			"DROP TABLE IF EXISTS Parameters;"
+		).run();
+	}
+	mAllParameters(pGuildID)
+	{
+		return this.SQL.prepare(
+			"SELECT * FROM Parameters WHERE GuildID = ?"
+ 		).all(pGuildID);
+	}
+	mSetParameters(pValues)
+	{
+		this.SQL.prepare(
+			"INSERT OR REPLACE INTO Parameters (GuildID, GuildName, ParameterName, ParameterValue) VALUES (@GuildID, @GuildName, @ParameterName, @ParameterValue)"
+		).run(pValues);
 	}
 }
 
-module.exports = new OnChannelPinsUpdate();
-
+module.exports = ParametersTable;

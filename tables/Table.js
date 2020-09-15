@@ -15,22 +15,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-const OnEvent = require("../OnEvent.js");
-class OnChannelPinsUpdate extends OnEvent {
-	constructor() {
-		super("channelPinsUpdate");
+
+class Table
+{
+	constructor(pSQL)
+	{
+		this.aSQL = pSQL;
 	}
-	
-	async mExecute(pDiscordBot, ...args) {
-		const channel = args[0];
-		const time = args[1];
-		await this.mOnReconnecting(pDiscordBot, channel, time);
-	}
-	
-	async mOnChannelPinsUpdate(pDiscordBot, channel, time) {
-		console.log(`channelPinsUpdate: ${channel}:${time}`);
+	get SQL()
+	{
+		return this.aSQL;
 	}
 }
 
-module.exports = new OnChannelPinsUpdate();
-
+module.exports = Table;

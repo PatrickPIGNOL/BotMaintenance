@@ -15,14 +15,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-class OnEvent {
-  constructor(pEventName) {
-    this.aEventName = pEventName;
-  }
+class OnEvent 
+{
+	constructor(pEventName) 
+	{
+		this.aEventName = pEventName;
+	}
 
-  get EventName() {
-    return this.aEventName;
-  }
+	get EventName() 
+	{
+		return this.aEventName;
+	}
 }
 
 module.exports = OnEvent;
