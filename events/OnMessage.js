@@ -137,6 +137,8 @@ class OnMessage extends OnEvent{
   
 	mRaids(pDiscordBot, message) 
 	{
+		const vDelay = 1200000;
+		const vMaxMessage = 4;
 		if(message.guild)
 		{      
 			let vRaid = pDiscordBot.SQL.Database.Raids.mGetRaids(message.guild.id, message.author.id, message.content);
@@ -152,7 +154,7 @@ class OnMessage extends OnEvent{
 				Date : Date.now()
 				}
 			}
-			if(Date.now() - vRaid.Date < 300000)
+			if(Date.now() - vRaid.Date < vDelay)
 			{          
 				vRaid.Number++;
 			}        
@@ -162,30 +164,29 @@ class OnMessage extends OnEvent{
 			}
 			vRaid.Date = Date.now();
 			pDiscordBot.SQL.Database.Raids.mSetRaids(vRaid); 
-			if(vRaid.Number > 4)
+			if(vRaid.Number > vMaxMessage)
 			{ 
 				let vMember;
 				if(message.member)
 				{
-					vMember = message.member;
+					vMember = message.member
 				}
 				else
 				{
-					vMember = message.guild.members.cache.find(vUserFound => vUserFound.id === message.author.id);
+					vMember = message.guild.members.fetch(message.author);
 				}
 				if(message.author.id !== message.guild.owner.user.id)
 				{
-					if(!message.member.hasPermission("ADMINISTRATOR"))
+					if(!vMember.hasPermissions("ADMINISTRATOR"))
 					{
-						const vMember = message.guild.members.cache.find(vUserFound => vUserFound.id === message.author.id);
-						vMember.ban({days: 1, reason: "Auto-Ban : Spam-Raider détecté"});
-					}          
+						message.guild.members.ban(message.author , { days: 1, reason: "Auto-Ban : Spam-Raider détecté"});
+					}
 				}
 			}
 			const vRaids = pDiscordBot.SQL.Database.Raids.mAllRaids(message.guild.id);
 			vRaids.forEach(vData => 
 			{        
-				if(Date.now() - vData.Date > 300000)
+				if(Date.now() - vData.Date > vDelay)
 				{
 					pDiscordBot.SQL.Database.Raids.mDelRaids(vData.rowid);
 				}

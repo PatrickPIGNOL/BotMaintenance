@@ -41,6 +41,12 @@ class ParametersTable extends Table
 			"SELECT * FROM Parameters WHERE GuildID = ?"
  		).all(pGuildID);
 	}
+	mParameter(pGuildID, pParameterName)
+	{
+		return this.SQL.prepare(
+			"SELECT * FROM Parameters WHERE GuildID = ? AND ParameterName = ?"
+		).get(pGuildID, pParameterName);
+	}
 	mSetParameters(pValues)
 	{
 		this.SQL.prepare(

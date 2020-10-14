@@ -37,14 +37,18 @@ class ByeChan extends Command
 	async mExecute(pDiscordBot, message, args) 
 	{
 		super.mExecute(pDiscordBot, message, args);
-		pDiscordBot.Config.Parameters[message.guild.id]["ByeChannel"] = message.mentions.channels.first().name;
-		let vParameter = {
+		console.log(message.mentions.channels.first().id);
+		pDiscordBot.Config.Parameters[message.guild.id]["ByeChannel"] = message.mentions.channels.first().id;
+		const vParameter = {
 			GuildID:`${message.guild.id}`, 
 			GuildName:`${message.guild.name}`, 
 			ParameterName:"ByeChannel", 
-			ParameterValue: pDiscordBot.Config.Parameters[message.guild.id]["ByeChannel"]
+			ParameterValue: message.mentions.channels.first().id 
 		};
 		pDiscordBot.SQL.Database.Parameters.mSetParameters(vParameter);
+		const vByeChannel = message.guild.channels.cache.find(
+      		vChannelFound => vChannelFound.id === vParameter.ParameterValue ["ByeChannel"]
+    	);
 		const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
 		.setAuthor(
 			pDiscordBot.aClient.user.username,
@@ -52,7 +56,7 @@ class ByeChan extends Command
 			pDiscordBot.aConfig.URL
 		)
 		.setColor(pDiscordBot.aConfig.Good)
-		.setDescription(`Le channel des annonces de départ à bien été changé par "${pDiscordBot.Config.Parameters[message.guild.id]["ByeChannel"]}"`)
+		.setDescription(`Le channel des annonces de départ à bien été changé par "${vByeChannel}"`)
 		.setThumbnail(message.author.displayAvatarURL());
 		message.channel.send(vEmbed);
 		message.delete();
