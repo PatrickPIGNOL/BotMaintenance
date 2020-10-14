@@ -18,6 +18,7 @@
 const OnEvent = require("../OnEvent.js");
 class OnGuildMemberRemove extends OnEvent 
 {
+<<<<<<< HEAD
 	constructor() 
 	{
 		super("guildMemberRemove");
@@ -60,6 +61,50 @@ class OnGuildMemberRemove extends OnEvent
 		.setThumbnail(vUser.displayAvatarURL());
 		vByeChannel.send(vEmbed);
 	}
+=======
+    constructor() 
+    {
+       super("guildMemberRemove");
+    }
+
+    async mExecute(pDiscordBot, ...args) 
+    {
+        const member = args[0];
+        await this.mOnGuildMemberRemove(pDiscordBot, member);
+    }
+  
+    mOnGuildMemberRemove(pDiscordBot, member) 
+    {
+        const vUser = member.user;
+        const vGuild = member.guild;
+        const vCache = vGuild.channels.cache;
+
+        const vByeChannelParametter = pDiscordBot.SQL.Database.Parameters.mParameter(member.guild.id, "ByeChannel");
+        
+        const vByeChannel = vCache.find(
+          vChannelFound => vChannelFound.id === vByeChannelParametter.ParameterValue 
+        );
+        if (!vByeChannel) {
+        console.log(`channel "${pDiscordBot.Config.Parameters[member.guild.id]["ByeChannel"]}" not found`);
+        return;
+        }
+        const vMessageParameter = pDiscordBot.SQL.Database.Parameters.mParameter(member.guild.id, "ByeMessage");
+        let vMessage = vMessageParameter.ParameterValue 
+        while(vMessage.indexOf("${member}") > -1)
+        {
+        vMessage = vMessage.replace('${member}', `${member}`);
+        }
+        const vEmbed = new pDiscordBot.aDiscord.MessageEmbed()
+        .setAuthor(
+          vGuild.owner.user.username,
+          vGuild.owner.user.displayAvatarURL()
+        )
+        .setColor(pDiscordBot.aConfig.Bad)
+        .setDescription(vMessage)
+        .setThumbnail(vUser.displayAvatarURL());
+        vByeChannel.send(vEmbed);
+    }
+>>>>>>> origin/master
 }
 
 module.exports = new OnGuildMemberRemove();
