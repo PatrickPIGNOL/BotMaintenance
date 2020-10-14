@@ -18,8 +18,6 @@
 const OnEvent = require("../OnEvent.js");
 class OnGuildMemberRemove extends OnEvent 
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	constructor() 
 	{
 		super("guildMemberRemove");
@@ -62,7 +60,7 @@ class OnGuildMemberRemove extends OnEvent
 		.setThumbnail(vUser.displayAvatarURL());
 		vByeChannel.send(vEmbed);
 	}
-=======
+
     constructor() 
     {
        super("guildMemberRemove");
@@ -76,7 +74,6 @@ class OnGuildMemberRemove extends OnEvent
   
     mOnGuildMemberRemove(pDiscordBot, member) 
     {
-=======
     constructor() 
     {
        super("guildMemberRemove");
@@ -90,7 +87,6 @@ class OnGuildMemberRemove extends OnEvent
   
     mOnGuildMemberRemove(pDiscordBot, member) 
     {
->>>>>>> origin/master
         const vUser = member.user;
         const vGuild = member.guild;
         const vCache = vGuild.channels.cache;
@@ -120,10 +116,6 @@ class OnGuildMemberRemove extends OnEvent
         .setThumbnail(vUser.displayAvatarURL());
         vByeChannel.send(vEmbed);
     }
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
 }
 
 module.exports = new OnGuildMemberRemove();
